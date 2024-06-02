@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kaida/src/routing/app_router.dart';
 import 'firebase_options.dart';
 
@@ -10,7 +11,9 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(
-    const MyApp(),
+    const ProviderScope(
+      child: MyApp(),
+    ),
   );
 }
 
@@ -24,4 +27,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

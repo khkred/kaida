@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../../../constants/routes.dart';
+import '../../provider/auth_providers.dart';
 
 class SignInPage extends HookConsumerWidget {
   const SignInPage({super.key});
@@ -77,9 +78,9 @@ class SignInPage extends HookConsumerWidget {
                   onPressed: () async {
                     if (formKey.currentState?.validate() == true) {
                       try {
-                        //This will be replaced by the actual sign in logic in future tutorials
-                        // final authNotifier = ref.read(authNotifierProvider.notifier);
-                        // await authNotifier.signIn(emailController.text, passwordController.text);
+
+                         final authNotifier = ref.read(authNotifierProvider.notifier);
+                         await authNotifier.signIn(emailController.text, passwordController.text);
 
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
