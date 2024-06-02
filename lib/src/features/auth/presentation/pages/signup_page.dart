@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../constants/routes.dart';
+import '../../provider/auth_providers.dart';
 
 class SignUpPage extends HookConsumerWidget {
   const SignUpPage({super.key});
@@ -116,9 +117,9 @@ class SignUpPage extends HookConsumerWidget {
               ElevatedButton(onPressed: () async{
                 if(formKey.currentState?.validate() == true) {
                   try {
-                    // This will be replaced by actual sign-up logic in future tutorials
-                    // final authNotifier = ref.read(authNotifierProvider.notifier);
-                    // await authNotifier.signUp(emailController.text, passwordController.text, nameController.text, phoneController.text)
+
+                     final authNotifier = ref.read(authNotifierProvider.notifier);
+                     await authNotifier.signUp(emailController.text, passwordController.text, nameController.text, phoneController.text);
 
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Form validated successfully')));
                   }
