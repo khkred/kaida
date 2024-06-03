@@ -14,9 +14,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final userId = await _authRepository.signIn(email, password);
 
-      //TODO: HANDLE CASE WHEN userId = null
       state = AuthStateAuthenticated(userId);
     } catch (e) {
+
+      print('SignIn Error $e');
       state = const AuthStateUnAuthenticated();
     }
   }
@@ -29,8 +30,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final userId =
           await _authRepository.signUp(email, password, name, phoneNumber);
 
+      print("User Id: $userId");
+
       state = AuthStateAuthenticated(userId);
     } catch (e) {
+      print("SignUp Error : $e");
       state = const AuthStateUnAuthenticated();
     }
   }

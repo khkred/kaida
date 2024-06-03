@@ -108,31 +108,48 @@ class SignUpPage extends HookConsumerWidget {
                 },
               ),
 
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
               //Show the error here
               if (errorMessage.value != null)
-                Text(errorMessage.value!,
-                style: const TextStyle(color: Colors.red),),
+                Text(
+                  errorMessage.value!,
+                  style: const TextStyle(color: Colors.red),
+                ),
 
-              ElevatedButton(onPressed: () async{
-                if(formKey.currentState?.validate() == true) {
-                  try {
+              ElevatedButton(
+                  onPressed: () async {
+                    if (formKey.currentState?.validate() == true) {
+                      try {
+                        final authNotifier =
+                            ref.read(authNotifierProvider.notifier);
+                        await authNotifier.signUp(
+                            emailController.text,
+                            passwordController.text,
+                            nameController.text,
+                            phoneController.text);
 
-                     final authNotifier = ref.read(authNotifierProvider.notifier);
-                     await authNotifier.signUp(emailController.text, passwordController.text, nameController.text, phoneController.text);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text('Form validated successfully')));
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          errorMessage.value = e.toString();
+                        }
+                      }
+                    }
+                  },
+                  child: const Text('Sign Up')),
 
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Form validated successfully')));
-                  }
-                  catch (e) {
-                    errorMessage.value = e.toString();
-                  }
-                }
-              }, child: const Text('Sign Up')),
-
-
-              TextButton(onPressed: (){
-                context.go(Routes.signIn);
-              }, child: const Text('Already have an account? Sign In'))
+              TextButton(
+                  onPressed: () {
+                    context.go(Routes.signIn);
+                  },
+                  child: const Text('Already have an account? Sign In'))
             ],
           ),
         ),
