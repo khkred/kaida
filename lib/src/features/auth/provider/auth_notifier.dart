@@ -16,7 +16,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       state = AuthStateAuthenticated(userId);
     } catch (e) {
-
       print('SignIn Error $e');
       state = const AuthStateUnAuthenticated();
     }
@@ -49,7 +48,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> signOut() async {
-    await _authRepository.signOut();
-    state = const AuthStateUnAuthenticated();
+    try {
+      await _authRepository.signOut();
+      state = const AuthStateUnAuthenticated();
+    } catch (e) {
+      print('SignOut Error: $e');
+      rethrow;
+    }
   }
 }
