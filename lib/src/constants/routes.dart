@@ -9,4 +9,5 @@ class Routes {
   static const String profile = '/profile';
   static const String onboarding = '/onboarding';
   static const String passwordReset = '/passwordReset';
+  static const String emailVerification = '/emailVerification';
 }

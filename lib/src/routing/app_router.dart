@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kaida/src/features/auth/presentation/pages/email_verification_page.dart';
 import 'package:kaida/src/features/auth/presentation/pages/password_reset_page.dart';
 import 'package:kaida/src/features/auth/presentation/pages/signup_page.dart';
 import 'package:kaida/src/features/auth/provider/auth_providers.dart';
@@ -22,6 +24,10 @@ GoRouter createRouter(WidgetRef ref) {
             state.uri.path == Routes.signUp ||
             state.uri.path == Routes.passwordReset;
 
+        //For email verification
+        final user = FirebaseAuth.instance.currentUser;
+        final isEmailVerified = user?.emailVerified ?? false;
+
         // Onboarding check
         final isOnBoardingComplete =
             await SharedPreferencesUtil.isOnboardingComplete();
@@ -30,6 +36,7 @@ GoRouter createRouter(WidgetRef ref) {
         print('Current Auth State: $authState');
         print('Is Onboarding Complete: $isOnBoardingComplete');
         print('Current Location: ${state.uri.path}');
+        print('Email Verified: $isEmailVerified');
 
         // Basic Onboarding check
         if (!isOnBoardingComplete && state.uri.path != Routes.onboarding) {
@@ -41,8 +48,15 @@ GoRouter createRouter(WidgetRef ref) {
           return Routes.signIn;
         }
 
+        // Redirect to email verification if the user is logged in but the email is not verified
+        if (isLoggedIn & !isEmailVerified &&
+            state.uri.path != Routes.emailVerification) {
+          return Routes.emailVerification;
+        }
+
         // Check if the user is already authenticated but they are on one of the specified pages, then redirect them to profile
         if (isLoggedIn &&
+            isEmailVerified &&
             (state.uri.path == Routes.signIn ||
                 state.uri.path == Routes.signUp ||
                 state.uri.path == Routes.onboarding ||
@@ -71,6 +85,10 @@ GoRouter createRouter(WidgetRef ref) {
         GoRoute(
           path: Routes.passwordReset,
           builder: (context, state) => const PasswordResetPage(),
+        ),
+        GoRoute(
+          path: Routes.emailVerification,
+          builder: (context, state) => const EmailVerificationPage(),
         ),
       ]);
 }
