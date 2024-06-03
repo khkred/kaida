@@ -13,7 +13,13 @@ class AuthRepository {
       final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
 
-      return userCredential.user!.uid;
+      final user = userCredential.user!;
+      // Check if the user's email is verified
+      if(!user.emailVerified) {
+        throw FirebaseAuthException(code: 'email-not-verified', message: 'Email not verified');
+      }
+
+      return user.uid;
     } catch (e) {
       print('SignIn Error $e');
       rethrow;
@@ -40,7 +46,7 @@ class AuthRepository {
       // Now let's save upload the user to a Firestore collection named 'users'
       await _firestore.collection('users').doc(user.uid).set(appUser.toMap());
 
-      //After we upload the user. Let's send a email verification
+      //Send verification email
       await user.sendEmailVerification();
 
       return user.uid;
