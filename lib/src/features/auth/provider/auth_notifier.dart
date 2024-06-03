@@ -39,6 +39,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<void> resetPassword(String email) async {
+    try {
+      await _authRepository.resetPassword(email);
+    } catch (e) {
+      print('ResetPassword Error: $e');
+      throw e;
+    }
+  }
+
   Future<void> signOut() async {
     await _authRepository.signOut();
     state = const AuthStateUnAuthenticated();
