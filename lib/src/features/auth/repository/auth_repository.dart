@@ -15,6 +15,7 @@ class AuthRepository {
 
       return userCredential.user!.uid;
     } catch (e) {
+      print('SignIn Error $e');
       rethrow;
     }
   }
@@ -37,13 +38,23 @@ class AuthRepository {
       );
 
       // Now let's save upload the user to a Firestore collection named 'users'
-      _firestore.collection('users').doc(user.uid).set(appUser.toMap());
+      await _firestore.collection('users').doc(user.uid).set(appUser.toMap());
 
       //After we upload the user. Let's send a email verification
       await user.sendEmailVerification();
 
       return user.uid;
     } catch (e) {
+      print('Signup Error: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> resetPassword(String email) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      print('Reset Password Error: $e');
       rethrow;
     }
   }

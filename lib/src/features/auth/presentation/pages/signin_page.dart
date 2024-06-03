@@ -78,15 +78,22 @@ class SignInPage extends HookConsumerWidget {
                   onPressed: () async {
                     if (formKey.currentState?.validate() == true) {
                       try {
+                        final authNotifier =
+                            ref.read(authNotifierProvider.notifier);
+                        await authNotifier.signIn(
+                            emailController.text, passwordController.text);
 
-                         final authNotifier = ref.read(authNotifierProvider.notifier);
-                         await authNotifier.signIn(emailController.text, passwordController.text);
+                        if(context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Signed In Successfully')));
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Form validated successfully')));
-                      } catch (e) {
-                        errorMessage.value = e.toString();
+                        }
+                       } catch (e) {
+                        if(context.mounted) {
+                          errorMessage.value = e.toString();
+                        }
+
                       }
                     }
                   },
@@ -98,6 +105,13 @@ class SignInPage extends HookConsumerWidget {
                     context.go(Routes.signUp);
                   },
                   child: const Text('Don\'t have an account? Sign Up')),
+
+              TextButton(
+                onPressed: () {
+                  context.push(Routes.passwordReset);
+                },
+                child: const Text('Forgot Password'),
+              ),
             ],
           ),
         ),
