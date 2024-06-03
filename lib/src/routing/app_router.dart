@@ -18,8 +18,9 @@ GoRouter createRouter(WidgetRef ref) {
         //Returns AuthState
         final authState = ref.watch(authNotifierProvider);
         final isLoggedIn = authState is AuthStateAuthenticated;
-        final isLoggingIn =
-            state.uri.path == Routes.signIn || state.uri.path == Routes.signUp;
+        final isLoggingIn = state.uri.path == Routes.signIn ||
+            state.uri.path == Routes.signUp ||
+            state.uri.path == Routes.passwordReset;
 
         // Onboarding check
         final isOnBoardingComplete =
@@ -35,16 +36,17 @@ GoRouter createRouter(WidgetRef ref) {
           return Routes.onboarding;
         }
 
-        // We are check if Onboarding completed and yet the user is not yet loggedIn
-        if (isOnBoardingComplete && !isLoggedIn && !isLoggingIn && state.uri.path != Routes.signIn && state.uri.path != Routes.passwordReset) {
+        // Check if Onboarding completed and the user is not yet logged in
+        if (isOnBoardingComplete && !isLoggedIn && !isLoggingIn) {
           return Routes.signIn;
         }
 
-        // Here we are checking if the user is already authenticated but they are on one of the three pages on the right side, then we redirect them to profile
+        // Check if the user is already authenticated but they are on one of the specified pages, then redirect them to profile
         if (isLoggedIn &&
             (state.uri.path == Routes.signIn ||
                 state.uri.path == Routes.signUp ||
-                state.uri.path == Routes.onboarding)) {
+                state.uri.path == Routes.onboarding ||
+                state.uri.path == Routes.passwordReset)) {
           return Routes.profile;
         }
         return null;
