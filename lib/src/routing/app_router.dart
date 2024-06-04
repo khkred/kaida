@@ -7,6 +7,7 @@ import 'package:kaida/src/features/auth/presentation/pages/signup_page.dart';
 import 'package:kaida/src/features/auth/provider/auth_providers.dart';
 import 'package:kaida/src/features/auth/provider/auth_state.dart';
 import 'package:kaida/src/features/onboarding/presentation/pages/onboarding_page.dart';
+import 'package:kaida/src/features/profile/presentation/pages/change_password_page.dart';
 import 'package:kaida/src/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:kaida/src/features/profile/presentation/pages/user_profile_page.dart';
 import 'package:kaida/src/utils/shared_preferences_util.dart';
@@ -94,6 +95,9 @@ GoRouter createRouter(WidgetRef ref) {
         GoRoute(
           path: Routes.editProfile,
           builder: (context, state) => const EditProfilePage(),
+        ),
+        GoRoute(path: Routes.changePassword,
+        builder: (context, state) => const ChangePasswordPage(),
         ),
       ]);
 }

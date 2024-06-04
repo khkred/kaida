@@ -58,6 +58,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<void> changePassword(String oldPassword, String newPassword) async {
+    try {
+      await _authRepository.changePassword(oldPassword, newPassword);
+    } catch (e) {
+      print('ChangePassword Error: $e');
+      rethrow;
+    }
+  }
+
   Future<void> signOut() async {
     try {
       await _authRepository.signOut();

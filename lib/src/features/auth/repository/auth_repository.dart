@@ -33,42 +33,47 @@ class AuthRepository {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
       if (googleUser == null) {
-        throw FirebaseAuthException(code: 'google-sign-in-cancelled',
+        throw FirebaseAuthException(
+            code: 'google-sign-in-cancelled',
             message: 'Google sign-in cancelled');
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser
-          .authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final userCredential = await _firebaseAuth.signInWithCredential(
-          credential);
+      final userCredential =
+          await _firebaseAuth.signInWithCredential(credential);
 
       final user = userCredential.user!;
 
-      final appUser = AppUser(uid: user.uid,
+      final appUser = AppUser(
+        uid: user.uid,
         email: user.email!,
         name: user.displayName ?? 'N/A',
         phoneNumber: user.phoneNumber ?? 'N/A',
         emailVerified: user.emailVerified,
-        createdAt: Timestamp.now().toString(),);
+        createdAt: Timestamp.now().toString(),
+      );
 
-      await _firestore.collection('users').doc(user.uid).set(appUser.toMap(), SetOptions(merge: true));
+      await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .set(appUser.toMap(), SetOptions(merge: true));
 
       return user.uid;
-    }
-    catch (e) {
+    } catch (e) {
       print('Google Sign In Error: $e');
       rethrow;
     }
   }
 
-  Future<String> signUp(String email, String password, String name,
-      String phoneNumber) async {
+  Future<String> signUp(
+      String email, String password, String name, String phoneNumber) async {
     try {
       final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
@@ -106,11 +111,32 @@ class AuthRepository {
     }
   }
 
+  Future<void> changePassword(String oldPassword, String newPassword) async {
+    try {
+      final user = _firebaseAuth.currentUser;
+
+      if (user == null) {
+        throw FirebaseAuthException(
+            code: 'no-user', message: 'no user is currently signed In');
+      }
+
+      final email = user.email!;
+      final credential =
+          EmailAuthProvider.credential(email: email, password: oldPassword);
+
+      await user.reauthenticateWithCredential(credential);
+
+      await user.updatePassword(newPassword);
+    } catch (e) {
+      print('ChangePassword Error: $e');
+      rethrow;
+    }
+  }
+
   Future<void> signOut() async {
     try {
       await _firebaseAuth.signOut();
-    }
-    catch (e) {
+    } catch (e) {
       print('Signout Error: $e');
       rethrow;
     }

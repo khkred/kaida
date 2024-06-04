@@ -30,6 +30,9 @@ class UserProfilePage extends HookConsumerWidget {
               },
               icon: const Icon(Icons.edit),
             ),
+            IconButton(onPressed: (){
+              context.push(Routes.changePassword);
+            }, icon: const Icon(Icons.lock)),
             IconButton(
               onPressed: () {
                 ref.read(authNotifierProvider.notifier).signOut();
@@ -45,6 +48,10 @@ class UserProfilePage extends HookConsumerWidget {
             children: [
               Text('UserId : ${authState.userId}'),
               const SizedBox(height: 20),
+
+              ElevatedButton(onPressed: (){
+                context.push(Routes.changePassword);
+              }, child: const Text('Change Password'),),
               ElevatedButton(
                   onPressed: () async {
                     await ref.read(authNotifierProvider.notifier).signOut();
