@@ -21,6 +21,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<void> signInWithGoogle() async {
+    state = const AuthStateAuthenticating();
+    try {
+      final userId = await _authRepository.signInWithGoogle();
+      state = AuthStateAuthenticated(userId);
+    } catch (e) {
+      print('Google SignIn Error: $e');
+      rethrow;
+    }
+  }
+
   Future<void> signUp(
       String email, String password, String name, String phoneNumber) async {
     state = const AuthStateAuthenticating();
