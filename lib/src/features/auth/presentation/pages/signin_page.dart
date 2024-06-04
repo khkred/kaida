@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -83,21 +84,41 @@ class SignInPage extends HookConsumerWidget {
                         await authNotifier.signIn(
                             emailController.text, passwordController.text);
 
-                        if(context.mounted) {
+                        if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                   content: Text('Signed In Successfully')));
-
                         }
-                       } catch (e) {
-                        if(context.mounted) {
-                          errorMessage.value = e.toString();
+                      } catch (e) {
+                        if (context.mounted) {
+                          if (e is FirebaseAuthException &&
+                              e.code == 'email-not-verified') {
+                            context.go(Routes.emailVerification);
+                          } else {
+                            errorMessage.value = e.toString();
+                          }
                         }
-
                       }
                     }
                   },
-                  child: const Text('Sign In')),
+                  child: const Text('Sign In'),),
+
+              ElevatedButton.icon(onPressed: () async {
+                try {
+                  final authNotifier = ref.read(authNotifierProvider.notifier);
+                  await authNotifier.signInWithGoogle();
+
+                  if(context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Signed in with Google successfully')));
+                  }
+                }
+                catch (e) {
+                  if(context.mounted) {
+                    errorMessage.value = e.toString();
+                  }
+                }
+              }, label: const Text('Sign in with Google'),
+              icon: const Icon(Icons.login),),
 
               //Go to SignUp
               TextButton(

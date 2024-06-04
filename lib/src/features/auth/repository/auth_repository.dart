@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kaida/src/features/auth/domain/models/app_user.dart';
 
 class AuthRepository {
@@ -15,13 +16,58 @@ class AuthRepository {
 
       final user = userCredential.user!;
       // Check if the user's email is verified
-      if(!user.emailVerified) {
-        throw FirebaseAuthException(code: 'email-not-verified', message: 'Email not verified');
+      if (!user.emailVerified) {
+        throw FirebaseAuthException(
+            code: 'email-not-verified', message: 'Email not verified');
       }
 
       return user.uid;
     } catch (e) {
       print('SignIn Error $e');
+      rethrow;
+    }
+  }
+
+  Future<String> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      if (googleUser == null) {
+        throw FirebaseAuthException(
+            code: 'google-sign-in-cancelled',
+            message: 'Google sign-in cancelled');
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final userCredential =
+          await _firebaseAuth.signInWithCredential(credential);
+
+      final user = userCredential.user!;
+
+      final appUser = AppUser(
+        uid: user.uid,
+        email: user.email!,
+        name: user.displayName ?? 'N/A',
+        phoneNumber: user.phoneNumber ?? 'N/A',
+        emailVerified: user.emailVerified,
+        createdAt: Timestamp.now().toString(),
+      );
+
+      await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .set(appUser.toMap(), SetOptions(merge: true));
+
+      return user.uid;
+    } catch (e) {
+      print('Google Sign In Error: $e');
       rethrow;
     }
   }
@@ -65,11 +111,32 @@ class AuthRepository {
     }
   }
 
+  Future<void> changePassword(String oldPassword, String newPassword) async {
+    try {
+      final user = _firebaseAuth.currentUser;
+
+      if (user == null) {
+        throw FirebaseAuthException(
+            code: 'no-user', message: 'no user is currently signed In');
+      }
+
+      final email = user.email!;
+      final credential =
+          EmailAuthProvider.credential(email: email, password: oldPassword);
+
+      await user.reauthenticateWithCredential(credential);
+
+      await user.updatePassword(newPassword);
+    } catch (e) {
+      print('ChangePassword Error: $e');
+      rethrow;
+    }
+  }
+
   Future<void> signOut() async {
     try {
       await _firebaseAuth.signOut();
-    }
-    catch (e) {
+    } catch (e) {
       print('Signout Error: $e');
       rethrow;
     }
