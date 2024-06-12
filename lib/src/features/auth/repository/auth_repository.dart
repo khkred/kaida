@@ -111,6 +111,28 @@ class AuthRepository {
     }
   }
 
+  Future<void> verifyPhoneNumber(
+      String phoneNumber,
+      PhoneVerificationCompleted verificationCompleted,
+      PhoneVerificationFailed verificationFailed,
+      PhoneCodeSent codeSent,
+      PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout) async {
+    await _firebaseAuth.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: verificationCompleted,
+      verificationFailed: verificationFailed,
+      codeSent: codeSent,
+      codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
+    );
+  }
+
+  Future<UserCredential> signInWithPhoneNumber(
+      String verificationId, String smsCode) async {
+    final credential = PhoneAuthProvider.credential(
+        verificationId: verificationId, smsCode: smsCode);
+    return await _firebaseAuth.signInWithCredential(credential);
+  }
+
   Future<void> changePassword(String oldPassword, String newPassword) async {
     try {
       final user = _firebaseAuth.currentUser;

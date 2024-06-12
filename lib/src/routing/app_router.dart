@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kaida/src/features/auth/presentation/pages/email_verification_page.dart';
 import 'package:kaida/src/features/auth/presentation/pages/password_reset_page.dart';
+import 'package:kaida/src/features/auth/presentation/pages/phone_verification_page.dart';
 import 'package:kaida/src/features/auth/presentation/pages/signup_page.dart';
 import 'package:kaida/src/features/auth/provider/auth_providers.dart';
 import 'package:kaida/src/features/auth/provider/auth_state.dart';
@@ -96,8 +97,13 @@ GoRouter createRouter(WidgetRef ref) {
           path: Routes.editProfile,
           builder: (context, state) => const EditProfilePage(),
         ),
-        GoRoute(path: Routes.changePassword,
-        builder: (context, state) => const ChangePasswordPage(),
+        GoRoute(
+          path: Routes.changePassword,
+          builder: (context, state) => const ChangePasswordPage(),
+        ),
+        GoRoute(
+          path: Routes.phoneVerification,
+          builder: (context, state) => const PhoneVerificationPage(),
         ),
       ]);
 }

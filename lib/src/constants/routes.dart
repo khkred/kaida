@@ -12,4 +12,5 @@ class Routes {
   static const String passwordReset = '/passwordReset';
   static const String emailVerification = '/emailVerification';
   static const String editProfile = '/editProfile';
+  static const String phoneVerification = '/phoneVerification';
 }
