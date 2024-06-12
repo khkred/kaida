@@ -52,11 +52,19 @@ class UserProfilePage extends HookConsumerWidget {
               ElevatedButton(onPressed: (){
                 context.push(Routes.changePassword);
               }, child: const Text('Change Password'),),
+
+              ElevatedButton(onPressed: (){
+                context.go(Routes.phoneVerification);
+              }, child: const Text(
+                'Verify Phone Number'
+              ),),
               ElevatedButton(
                   onPressed: () async {
                     await ref.read(authNotifierProvider.notifier).signOut();
                   },
                   child: const Text('Sign Out')),
+
+
             ],
           ),
         ));
