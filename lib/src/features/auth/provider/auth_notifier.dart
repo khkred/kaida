@@ -49,24 +49,33 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = const AuthStateUnAuthenticated();
     }
   }
-  Future<void> verifyPhoneNumber(String phoneNumber, PhoneVerificationCompleted verificationCompleted, PhoneVerificationFailed verificationFailed,
-      PhoneCodeSent codeSent, PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout,) async{
+  Future<void> verifyPhoneNumber(
+      String phoneNumber,
+      PhoneVerificationCompleted verificationCompleted,
+      PhoneVerificationFailed verificationFailed,
+      PhoneCodeSent codeSent,
+      PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout,
+      ) async {
     try {
-      await _authRepository.verifyPhoneNumber(phoneNumber, verificationCompleted, verificationFailed, codeSent, codeAutoRetrievalTimeout);
-    }
-    catch (e) {
+      await _authRepository.verifyPhoneNumber(
+        phoneNumber,
+        verificationCompleted,
+        verificationFailed,
+        codeSent,
+        codeAutoRetrievalTimeout,
+      );
+    } catch (e) {
       print('VerifyPhoneNumber Error: $e');
-      rethrow;
+      throw e;
     }
   }
 
   Future<void> signInWithPhoneNumber(String verificationId, String smsCode) async {
     try {
       await _authRepository.signInWithPhoneNumber(verificationId, smsCode);
-    }
-    catch (e) {
+    } catch (e) {
       print('SignInWithPhoneNumber Error: $e');
-      rethrow;
+      throw e;
     }
   }
 
