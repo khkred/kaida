@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kaida/src/features/auth/provider/auth_providers.dart';
 import 'package:kaida/src/features/auth/provider/auth_state.dart';
+import 'package:kaida/src/shared/widgets/confirmation_dialog.dart';
 
 import '../../../../constants/routes.dart';
 
@@ -19,6 +20,16 @@ class UserProfilePage extends HookConsumerWidget {
         context.go(Routes.signIn);
       });
       return const SizedBox.shrink();
+    }
+    
+    void _showDeleteAccountDialog() {
+      showDialog(context: context, builder: (context) => ConfirmationDialog(title: 'Delete Account', content: 'Are you sure you want to delete your account? This action cannot be undone.', onConfirm: () async {
+        final authNotifier = ref.read(authNotifierProvider.notifier);
+
+        await authNotifier.deleteAccount();
+
+
+      }));
     }
     return Scaffold(
         appBar: AppBar(
@@ -63,6 +74,10 @@ class UserProfilePage extends HookConsumerWidget {
                     await ref.read(authNotifierProvider.notifier).signOut();
                   },
                   child: const Text('Sign Out')),
+
+              ElevatedButton(onPressed: _showDeleteAccountDialog,
+
+              style: ElevatedButton.styleFrom(foregroundColor: Colors.red), child: const Text('Delete Account'),)
 
 
             ],

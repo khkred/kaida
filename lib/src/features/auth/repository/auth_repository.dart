@@ -155,6 +155,26 @@ class AuthRepository {
     }
   }
 
+  Future<void> deleteAccount() async {
+    try {
+      final user = _firebaseAuth.currentUser;
+
+      if (user == null) {
+        throw FirebaseAuthException(code: 'no-user', message: 'No user is currently signed in');
+      }
+
+
+      //TODO: Setup a firebase extension to delete user's data
+      await _firestore.collection('users').doc(user.uid).delete();
+
+      await user.delete();
+    }
+     catch (e) {
+      print('DeleteAccount Error :$e');
+      rethrow;
+     }
+  }
+
   Future<void> signOut() async {
     try {
       await _firebaseAuth.signOut();
