@@ -26,6 +26,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = const AuthStateAuthenticating();
     try {
       final userId = await _authRepository.signInWithGoogle();
+
       state = AuthStateAuthenticated(userId);
     } catch (e) {
       print('Google SignIn Error: $e');
